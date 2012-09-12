@@ -1,0 +1,46 @@
+
+
+Compiling for Swig
+Step 1 Generate the Wrapper Code 
+swig -python Swig_test.i
+
+Step 2 Compile The Code and The Wrapper Code 
+mips-openwrt-linux-gcc -c Swig_test.c Swig_test_wrap.c \-I/usr/include/python2.7
+
+
+Step 3 Link the Code 
+mips-openwrt-linux-ld -shared Swig_test.o Swig_test_wrap.o -o _Swig_test.so
+
+
+Trial 2 
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+mips-openwrt-linux-gcc -c -fPIC Hello.cpp CHello.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+mips-openwrt-linux-g++ -shared CHello.o Hello.o XBee_ext_wrap.o -lstdc++ -o _XBee_ext.so
+-- Notes this seems to work for importing classes in open wrt but need the .py module too!
+
+Trial 3 Cross-Compile environment 
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+mips-openwrt-linux-gcc -c -fPIC -O3 CSerial.cpp XBee.cpp MagicXBee.cpp XBeeSystem.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+mips-openwrt-linux-g++ -shared CSerial.o XBee.o MagicXBee.o XBeeSystem.o XBee_ext_wrap.o -o _XBee_ext.so -lstdc++ -lrt -lpthread
+
+Trial 3 Host Environment
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+gcc -c -fPIC -03 CSerial.cpp XBee.cpp MagicXBee.cpp XBeeSystem.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+g++ -shared -lstdc++ -lrt -lpthread CSerial.o XBee.o MagicXBee.o XBeeSystem.o XBee_ext_wrap.o -o _XBee_ext.so
+
+Trial 4 Host Environment
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+gcc -c -fPIC -Os -fmessage-length=0 CSerial.cpp XBee.cpp MagicXBee.cpp XBeeSystem.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+g++ -shared -lrt -lpthread CSerial.o XBee.o MagicXBee.o XBeeSystem.o XBee_ext_wrap.o -o _XBee_ext.so
+
+Trial 5 Host 
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+g++ -c -fPIC -Os -fmessage-length=0 CSerial.cpp XBee.cpp MagicXBee.cpp XBeeSystem.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+g++ -shared -lrt -lpthread CSerial.o XBee.o MagicXBee.o XBeeSystem.o XBee_ext_wrap.o -o _XBee_ext.so
+
+Trial 6 Cross-Compile 
+swig -c++ -python -o XBee_ext_wrap.cpp XBee_ext.i
+mips-openwrt-linux-g++ -c -fPIC -Os -fmessage-length=0 CSerial.cpp XBee.cpp MagicXBee.cpp XBeeSystem.cpp XBee_ext_wrap.cpp \-I/usr/include/python2.7
+mips-openwrt-linux-g++ -shared -lrt -lpthread CSerial.o XBee.o MagicXBee.o XBeeSystem.o XBee_ext_wrap.o -o _XBee_ext.so
+
+
